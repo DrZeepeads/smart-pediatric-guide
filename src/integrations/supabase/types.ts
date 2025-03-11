@@ -9,45 +9,68 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      nelson_chunks: {
+      chat_conversations: {
         Row: {
-          chunk_id: string
-          chunk_text: string
+          id: string
+          started_at: string
+          user_id: string | null
         }
         Insert: {
-          chunk_id: string
-          chunk_text: string
+          id?: string
+          started_at?: string
+          user_id?: string | null
         }
         Update: {
-          chunk_id?: string
-          chunk_text?: string
+          id?: string
+          started_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
-      nelson_pediatrics_chunks: {
+      chat_messages: {
         Row: {
-          chapter: string
-          chunk_id: number
           content: string
-          created_at: string | null
-          embedding: string | null
+          conversation_id: string
+          created_at: string
           id: string
+          is_user: boolean
         }
         Insert: {
-          chapter: string
-          chunk_id: number
           content: string
-          created_at?: string | null
-          embedding?: string | null
+          conversation_id: string
+          created_at?: string
           id?: string
+          is_user: boolean
         }
         Update: {
-          chapter?: string
-          chunk_id?: number
           content?: string
-          created_at?: string | null
-          embedding?: string | null
+          conversation_id?: string
+          created_at?: string
           id?: string
+          is_user?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nelson_textbook: {
+        Row: {
+          chunk_id: string | null
+          content: string
+        }
+        Insert: {
+          chunk_id?: string | null
+          content: string
+        }
+        Update: {
+          chunk_id?: string | null
+          content?: string
         }
         Relationships: []
       }
@@ -56,178 +79,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      binary_quantize:
-        | {
-            Args: {
-              "": string
-            }
-            Returns: unknown
-          }
-        | {
-            Args: {
-              "": unknown
-            }
-            Returns: unknown
-          }
-      halfvec_avg: {
-        Args: {
-          "": number[]
-        }
-        Returns: unknown
-      }
-      halfvec_out: {
-        Args: {
-          "": unknown
-        }
-        Returns: unknown
-      }
-      halfvec_send: {
-        Args: {
-          "": unknown
-        }
-        Returns: string
-      }
-      halfvec_typmod_in: {
-        Args: {
-          "": unknown[]
-        }
-        Returns: number
-      }
-      hnsw_bit_support: {
-        Args: {
-          "": unknown
-        }
-        Returns: unknown
-      }
-      hnsw_halfvec_support: {
-        Args: {
-          "": unknown
-        }
-        Returns: unknown
-      }
-      hnsw_sparsevec_support: {
-        Args: {
-          "": unknown
-        }
-        Returns: unknown
-      }
-      hnswhandler: {
-        Args: {
-          "": unknown
-        }
-        Returns: unknown
-      }
-      ivfflat_bit_support: {
-        Args: {
-          "": unknown
-        }
-        Returns: unknown
-      }
-      ivfflat_halfvec_support: {
-        Args: {
-          "": unknown
-        }
-        Returns: unknown
-      }
-      ivfflathandler: {
-        Args: {
-          "": unknown
-        }
-        Returns: unknown
-      }
-      l2_norm:
-        | {
-            Args: {
-              "": unknown
-            }
-            Returns: number
-          }
-        | {
-            Args: {
-              "": unknown
-            }
-            Returns: number
-          }
-      l2_normalize:
-        | {
-            Args: {
-              "": string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              "": unknown
-            }
-            Returns: unknown
-          }
-        | {
-            Args: {
-              "": unknown
-            }
-            Returns: unknown
-          }
-      sparsevec_out: {
-        Args: {
-          "": unknown
-        }
-        Returns: unknown
-      }
-      sparsevec_send: {
-        Args: {
-          "": unknown
-        }
-        Returns: string
-      }
-      sparsevec_typmod_in: {
-        Args: {
-          "": unknown[]
-        }
-        Returns: number
-      }
-      vector_avg: {
-        Args: {
-          "": number[]
-        }
-        Returns: string
-      }
-      vector_dims:
-        | {
-            Args: {
-              "": string
-            }
-            Returns: number
-          }
-        | {
-            Args: {
-              "": unknown
-            }
-            Returns: number
-          }
-      vector_norm: {
-        Args: {
-          "": string
-        }
-        Returns: number
-      }
-      vector_out: {
-        Args: {
-          "": string
-        }
-        Returns: unknown
-      }
-      vector_send: {
-        Args: {
-          "": string
-        }
-        Returns: string
-      }
-      vector_typmod_in: {
-        Args: {
-          "": unknown[]
-        }
-        Returns: number
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
