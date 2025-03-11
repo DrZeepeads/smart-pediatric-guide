@@ -9,6 +9,21 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      nelson_chunks: {
+        Row: {
+          chunk_id: string
+          chunk_text: string
+        }
+        Insert: {
+          chunk_id: string
+          chunk_text: string
+        }
+        Update: {
+          chunk_id?: string
+          chunk_text?: string
+        }
+        Relationships: []
+      }
       nelson_pediatrics_chunks: {
         Row: {
           chapter: string
