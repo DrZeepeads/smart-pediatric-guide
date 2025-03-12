@@ -79,17 +79,35 @@ const AiAssistant = () => {
       
       if (error) throw error;
       
+      if (!data || (!data.answer && !data.error)) {
+        throw new Error('Invalid response from AI assistant');
+      }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
       // Add assistant message
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: data.answer || "I couldn't find information about that in my knowledge base.",
+        content: data.answer || "I apologize, but I couldn't generate a response. Please try rephrasing your question.",
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, assistantMessage]);
       
     } catch (error: any) {
+      // Add error message from assistant
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "I apologize, but I encountered an error while processing your request. Please try again or rephrase your question.",
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+      
       toast({
         variant: "destructive",
         title: "Error",
