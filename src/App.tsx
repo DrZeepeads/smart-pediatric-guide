@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Index from "./pages/Index";
 import DosageCalculator from "./pages/DosageCalculator";
+import NelsonSearch from "./pages/NelsonSearch";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -37,6 +38,11 @@ const AppRoutes = () => {
       <Route path="/dosage-calculator" element={
         <ProtectedRoute>
           <DosageCalculator />
+        </ProtectedRoute>
+      } />
+      <Route path="/nelson-search" element={
+        <ProtectedRoute>
+          <NelsonSearch />
         </ProtectedRoute>
       } />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

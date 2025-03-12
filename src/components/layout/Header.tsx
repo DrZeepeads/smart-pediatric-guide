@@ -16,9 +16,16 @@ const Header = () => {
           <Link to="/" className="hover:underline">
             Home
           </Link>
-          <Link to="/dosage-calculator" className="hover:underline">
-            Dosage Calculator
-          </Link>
+          {user && (
+            <>
+              <Link to="/dosage-calculator" className="hover:underline">
+                Dosage Calculator
+              </Link>
+              <Link to="/nelson-search" className="hover:underline">
+                Nelson Search
+              </Link>
+            </>
+          )}
           {user ? (
             <Button variant="outline" onClick={signOut}>
               Sign Out
