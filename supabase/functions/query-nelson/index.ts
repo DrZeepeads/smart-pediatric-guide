@@ -24,18 +24,33 @@ serve(async (req) => {
     // Create a Supabase client
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
     
-    // Get relevant chunks based on the query
-    const { data: chunks, error } = await supabase
+    // First, search for relevant chunks
+    const { data: searchResults, error: searchError } = await supabase
       .from('nelson_chunks')
       .select('chunk_text')
+      .textSearch('chunk_text', query, {
+        config: 'english',
+        type: 'websearch'
+      })
       .limit(5);
       
-    if (error) throw error;
+    if (searchError) throw searchError;
     
-    // Combine chunks into context
-    const context = chunks.map(chunk => chunk.chunk_text).join('\n\n');
+    // Get additional context from similar chunks
+    const { data: similarChunks, error: similarError } = await supabase
+      .from('nelson_chunks')
+      .select('chunk_text')
+      .limit(3);
+      
+    if (similarError) throw similarError;
     
-    // Use Gemini API to generate response
+    // Combine all relevant context
+    const context = [
+      ...(searchResults?.map(r => r.chunk_text) || []),
+      ...(similarChunks?.map(r => r.chunk_text) || [])
+    ].join('\n\n');
+    
+    // Use Gemini API to generate a comprehensive response
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
@@ -44,19 +59,25 @@ serve(async (req) => {
       body: JSON.stringify({
         contents: [
           {
-            role: "user",
+            role: "system",
             parts: [
               {
                 text: `You are a pediatric knowledge assistant based on Nelson's Pediatrics. 
-                You will answer questions based on the following context from Nelson's Pediatrics textbook.
+                Provide accurate, evidence-based answers based on the following context from Nelson's Pediatrics textbook.
+                If you're not completely certain about something, acknowledge the limitations of your knowledge.
+                Always cite specific sections or chapters when possible.
                 
                 Context:
                 ${context}
                 
                 Question: ${query}
                 
-                If the answer is not in the context, say so and provide general information from your training.
-                Always cite the source as Nelson's Pediatrics when answering from the context.`
+                If the specific answer is not in the context:
+                1. Say so explicitly
+                2. Provide general, evidence-based information from your training
+                3. Recommend consulting the full Nelson's Pediatrics text or a healthcare provider for specific medical advice
+                
+                Always cite "Nelson's Pediatrics" when using information from the context.`
               }
             ]
           }
@@ -64,6 +85,8 @@ serve(async (req) => {
         generationConfig: {
           temperature: 0.2,
           maxOutputTokens: 1024,
+          topP: 0.8,
+          topK: 40
         }
       }),
     });
@@ -75,7 +98,10 @@ serve(async (req) => {
       generatedText = data.candidates[0].content.parts[0].text;
     }
     
-    return new Response(JSON.stringify({ answer: generatedText }), {
+    return new Response(JSON.stringify({ 
+      answer: generatedText,
+      sourceChunks: searchResults
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

@@ -18,17 +18,20 @@ serve(async (req) => {
   }
 
   try {
-    const { query } = await req.json();
+    const { query, limit = 10 } = await req.json();
     
     // Create a Supabase client
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
     
-    // Search for relevant chunks
+    // Perform full-text search on nelson_chunks
     const { data: chunks, error } = await supabase
       .from('nelson_chunks')
       .select('chunk_id, chunk_text')
-      .textSearch('chunk_text', query)
-      .limit(5);
+      .textSearch('chunk_text', query, {
+        config: 'english',
+        type: 'websearch'
+      })
+      .limit(limit);
       
     if (error) throw error;
     
