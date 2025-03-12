@@ -9,71 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      chat_conversations: {
-        Row: {
-          id: string
-          started_at: string
-          user_id: string | null
-        }
-        Insert: {
-          id?: string
-          started_at?: string
-          user_id?: string | null
-        }
-        Update: {
-          id?: string
-          started_at?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      chat_messages: {
-        Row: {
-          content: string
-          conversation_id: string
-          created_at: string
-          id: string
-          is_user: boolean
-        }
-        Insert: {
-          content: string
-          conversation_id: string
-          created_at?: string
-          id?: string
-          is_user: boolean
-        }
-        Update: {
-          content?: string
-          conversation_id?: string
-          created_at?: string
-          id?: string
-          is_user?: boolean
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chat_messages_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "chat_conversations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      nelson_textbook: {
-        Row: {
-          chunk_id: string | null
-          content: string
-        }
-        Insert: {
-          chunk_id?: string | null
-          content: string
-        }
-        Update: {
-          chunk_id?: string | null
-          content?: string
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
