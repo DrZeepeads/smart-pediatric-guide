@@ -76,7 +76,7 @@ const Auth = () => {
       <main className="flex-grow flex items-center justify-center py-12 px-4">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Nelson-GPT</CardTitle>
+            <CardTitle className="text-2xl font-bold">Nelson Pediatrics</CardTitle>
             <CardDescription>
               Sign in or create an account to access Nelson Pediatrics knowledge.
             </CardDescription>
