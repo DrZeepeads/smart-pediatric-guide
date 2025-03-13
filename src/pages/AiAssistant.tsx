@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -9,11 +8,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { Send, Bot, User, InfoIcon } from "lucide-react";
+import { Send, Bot, User, InfoIcon, WifiOff } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -26,6 +26,7 @@ const AiAssistant = () => {
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
@@ -37,6 +38,20 @@ const AiAssistant = () => {
     navigate("/auth");
     return null;
   }
+
+  useEffect(() => {
+    // Handle online/offline status
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     // Scroll to bottom of messages
@@ -56,6 +71,16 @@ const AiAssistant = () => {
         variant: "destructive",
         title: "Error",
         description: "Please enter a message",
+      });
+      return;
+    }
+
+    // Check if offline
+    if (!isOnline) {
+      toast({
+        variant: "destructive",
+        title: "Offline Mode",
+        description: "You're currently offline. The AI assistant requires an internet connection.",
       });
       return;
     }
@@ -141,6 +166,13 @@ const AiAssistant = () => {
         </div>
         
         <Card className="mt-4 flex-grow flex flex-col rounded-xl shadow-md border overflow-hidden">
+          {!isOnline && (
+            <div className="bg-amber-50 border-b border-amber-200 p-2 flex items-center justify-center gap-2 text-amber-700 text-sm">
+              <WifiOff className="h-4 w-4" />
+              <span>You're offline. The AI assistant requires an internet connection.</span>
+            </div>
+          )}
+          
           <ScrollArea className="flex-grow p-4">
             <div className="space-y-4 pb-4">
               {messages.length === 0 ? (
@@ -216,18 +248,21 @@ const AiAssistant = () => {
               <Input
                 ref={inputRef}
                 type="text"
-                placeholder="Ask a question about pediatric medicine..."
+                placeholder={isOnline 
+                  ? "Ask a question about pediatric medicine..." 
+                  : "You're offline. AI assistant requires internet connection."
+                }
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="flex-grow"
-                disabled={loading}
+                disabled={loading || !isOnline}
               />
-              <Button type="submit" size="icon" disabled={loading}>
+              <Button type="submit" size="icon" disabled={loading || !isOnline}>
                 <Send className="h-4 w-4" />
               </Button>
             </form>
             <div className="mt-2 text-xs text-center text-muted-foreground">
-              Responses are generated from Nelson's Pediatrics textbook data using Google's Gemini AI
+              Responses are generated from Nelson's Pediatrics textbook data using Mistral AI
             </div>
           </CardContent>
         </Card>

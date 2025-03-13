@@ -1,7 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { CardHover, CardHoverIcon, CardHoverTitle, CardHoverDescription } from "@/components/ui/card-hover";
-import { Calculator, LineChart, MessageSquare, Wifi } from "lucide-react";
+import { Calculator, LineChart, MessageSquare, Wifi, AlertTriangle } from "lucide-react";
 
 export default function Features() {
   const features = [
@@ -24,6 +24,12 @@ export default function Features() {
       link: "/ai-assistant"
     },
     {
+      icon: <AlertTriangle className="h-6 w-6 text-primary" />,
+      title: "Emergency Guidelines",
+      description: "Quick reference emergency pediatric protocols available offline when you need them most.",
+      link: "/emergency"
+    },
+    {
       icon: <Wifi className="h-6 w-6 text-primary" />,
       title: "Offline Access",
       description: "Access critical information and tools even without internet connection.",
@@ -41,7 +47,7 @@ export default function Features() {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <Link to={feature.link} key={index} className="block outline-none focus:ring-2 focus:ring-primary/20 rounded-2xl">
               <CardHover className="h-full transition-all duration-300 hover:translate-y-[-8px]">

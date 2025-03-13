@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Index from "./pages/Index";
 import DosageCalculator from "./pages/DosageCalculator";
 import AiAssistant from "./pages/AiAssistant";
+import EmergencyPage from "./pages/EmergencyPage";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -50,6 +51,7 @@ const AppRoutes = () => {
           <AiAssistant />
         </ProtectedRoute>
       } />
+      <Route path="/emergency" element={<EmergencyPage />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
